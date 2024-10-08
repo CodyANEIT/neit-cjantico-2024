@@ -1,9 +1,9 @@
 document.onclick = () => {
     +document.querySelector('.patrons').value--;
     let audio = new Audio();
-    audio.src = './sounds/Выстрел.mp3';
+    audio.src = './sounds/shot.mp3';
     let audioEmpty = new Audio();
-    audioEmpty.src = './sounds/пустой выстрел.wav';
+    audioEmpty.src = './sounds/emptyshot.wav';
 
     if (document.querySelector('.patrons').value <= 5 && document.querySelector('.patrons').value >= 0) {
         audio.autoplay = true;
@@ -18,7 +18,7 @@ document.onclick = () => {
 
 document.addEventListener('keydown', function(event) {
     let audio3 = new Audio();
-	audio3.src = './sounds/перезарядка.wav';
+	audio3.src = './sounds/reload.wav';
 
     if (event.code == 'KeyR' && document.querySelector('.patrons').value < 5) {
         audio3.autoplay = true;
