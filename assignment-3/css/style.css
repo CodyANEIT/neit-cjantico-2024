@@ -2,7 +2,7 @@
     cursor: url("crosshair.png") 53 53, crosshair;
     -webkit-user-select: none;
     font-size: 30px;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     color: #f59517;
     text-shadow: -1px -1px 0 rgb(39, 39, 39), 1px -1px 0 rgb(39, 39, 39), 1px 1px 0 rgb(39, 39, 39),
     1px 1px 0 rgb(39, 39, 39);
