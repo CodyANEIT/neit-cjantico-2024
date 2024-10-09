@@ -22,7 +22,7 @@ document.onclick = (event) => {
     img.style.left = `${event.pageX}px`;
     img.style.top = `${event.pageY}px`;
     img.style.transform = 'translate(-50%, -50%) scale(0)';
-    img.style.transition = 'transform 0.5s, opacity 1.5s';
+    img.style.transition = 'transform 0.2s, opacity 0.5s';
     document.body.appendChild(img);
 
     // Trigger the zoom-in effect
