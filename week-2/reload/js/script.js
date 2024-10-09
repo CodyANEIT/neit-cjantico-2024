@@ -4,7 +4,7 @@ document.onclick = () => {
     audio.src = './sounds/shot.mp3';
     let audioEmpty = new Audio();
     audioEmpty.src = './sounds/emptyshot.wav';
-
+//When clicked a shot will be heard untill count reaches 0 and will then play the empty shot
     if (document.querySelector('.patrons').value <= 5 && document.querySelector('.patrons').value >= 0) {
         audio.autoplay = true;
         audioEmpty.autoplay = false;
@@ -15,7 +15,7 @@ document.onclick = () => {
         audio.autoplay = false;
     };
 };
-
+//when reloaded (R Press) the reloading effect will play as the count resets.
 document.addEventListener('keydown', function(event) {
     let audio3 = new Audio();
 	audio3.src = './sounds/reload.wav';
