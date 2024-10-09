@@ -17,7 +17,7 @@ document.onclick = (event) => {
 
     // Display the image at the mouse cursor position with a zoom-in effect
     let img = document.createElement('img');
-    img.src = 'flash.png'; // Replace with your image path
+    img.src = 'images/flash.png'; // Replace with your image path
     img.style.position = 'absolute';
     img.style.left = `${event.pageX}px`;
     img.style.top = `${event.pageY}px`;
