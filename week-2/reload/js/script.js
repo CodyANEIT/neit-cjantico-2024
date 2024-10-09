@@ -20,6 +20,9 @@ document.onclick = (event) => {
         img.style.transition = 'transform 0.1s, opacity 0.15s';
         document.body.appendChild(img);
 
+        // Hide overflow to prevent scroll bars
+        document.body.style.overflow = 'hidden';
+
         // Trigger the zoom-in effect
         setTimeout(() => {
             img.style.transform = 'translate(-50%, -50%) scale(1)';
@@ -30,6 +33,8 @@ document.onclick = (event) => {
             img.style.opacity = '0';
             setTimeout(() => {
                 document.body.removeChild(img);
+                // Restore overflow after removing the image
+                document.body.style.overflow = '';
             }, 150);
         }, 150);
 
