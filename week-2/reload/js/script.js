@@ -52,7 +52,11 @@ document.addEventListener('keydown', function(event) {
 // Create a "RELOAD" button
 const reloadButton = document.createElement('button');
 reloadButton.innerText = 'RELOAD';
-reloadButton.style.display = 'none'; // Initially hidden
+reloadButton.style.position = 'fixed';
+reloadButton.style.bottom = '20px';
+reloadButton.style.left = '50%';
+reloadButton.style.transform = 'translateX(-50%)';
+reloadButton.style.display = 'none';
 reloadButton.onclick = () => {
     let event = new KeyboardEvent('keydown', {'code': 'KeyR'});
     document.dispatchEvent(event);
