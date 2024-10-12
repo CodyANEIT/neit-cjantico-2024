@@ -35,13 +35,15 @@ document.onclick = (event) => {
         audioEmpty.autoplay = true;
         audio.autoplay = false;
     }
+
+    updateReloadButtonVisibility(); // Update button visibility
 };
 
 // When reloaded (R Press) the reloading effect will play as the count resets.
 document.addEventListener('keydown', function(event) {
     let audio3 = new Audio();
     audio3.src = './sounds/reload.wav';
-    if (event.code == 'KeyR' && document.querySelector('.patrons').value < 5) {
+    if (event.code === 'KeyR' && document.querySelector('.patrons').value < 5) {
         audio3.autoplay = true;
         document.querySelector('.patrons').value = 5;
     } else {
@@ -56,7 +58,7 @@ reloadButton.style.position = 'fixed';
 reloadButton.style.bottom = '20px';
 reloadButton.style.left = '50%';
 reloadButton.style.transform = 'translateX(-50%)';
-reloadButton.style.display = 'none';
+reloadButton.style.display = 'none'; // Initially hidden
 reloadButton.onclick = () => {
     let event = new KeyboardEvent('keydown', {'code': 'KeyR'});
     document.dispatchEvent(event);
