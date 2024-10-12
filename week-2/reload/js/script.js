@@ -5,14 +5,12 @@ document.onclick = (event) => {
     let audioEmpty = new Audio();
     audioEmpty.src = './sounds/emptyshot.wav';
 
-    // When clicked a shot will be heard until count reaches 0 and will then play the empty shot
     if (patronsValue <= 5 && patronsValue > 0) {
         audio.autoplay = true;
         audioEmpty.autoplay = false;
 
-        // Display the image at the mouse cursor position with a fast zoom-in effect
         let img = document.createElement('img');
-        img.src = 'images/flash.png'; // Replace with your image path
+        img.src = 'images/flash.png';
         img.style.position = 'absolute';
         img.style.left = `${event.pageX}px`;
         img.style.top = `${event.pageY}px`;
@@ -20,24 +18,18 @@ document.onclick = (event) => {
         img.style.transition = 'transform 0.1s, opacity 0.15s';
         document.body.appendChild(img);
 
-        // Hide overflow to prevent scroll bars
         document.body.style.overflow = 'hidden';
-
-        // Trigger the zoom-in effect
         setTimeout(() => {
             img.style.transform = 'translate(-50%, -50%) scale(1)';
         }, 0);
 
-        // Fade out and remove the image after 0.15 seconds
         setTimeout(() => {
             img.style.opacity = '0';
             setTimeout(() => {
                 document.body.removeChild(img);
-                // Restore overflow after removing the image
                 document.body.style.overflow = '';
             }, 150);
         }, 150);
-
     } else {
         document.querySelector('.patrons').value++;
         audioEmpty.autoplay = true;
@@ -49,7 +41,6 @@ document.onclick = (event) => {
 document.addEventListener('keydown', function(event) {
     let audio3 = new Audio();
     audio3.src = './sounds/reload.wav';
-
     if (event.code == 'KeyR' && document.querySelector('.patrons').value < 5) {
         audio3.autoplay = true;
         document.querySelector('.patrons').value = 5;
@@ -57,3 +48,28 @@ document.addEventListener('keydown', function(event) {
         audio3.autoplay = false;
     }
 });
+
+// Create a "RELOAD" button
+const reloadButton = document.createElement('button');
+reloadButton.innerText = 'RELOAD';
+reloadButton.style.display = 'none'; // Initially hidden
+reloadButton.onclick = () => {
+    let event = new KeyboardEvent('keydown', {'code': 'KeyR'});
+    document.dispatchEvent(event);
+};
+document.body.appendChild(reloadButton);
+
+// Show the button when patrons count is 0 and hide otherwise
+const updateReloadButtonVisibility = () => {
+    if (document.querySelector('.patrons').value == 0) {
+        reloadButton.style.display = 'block';
+    } else {
+        reloadButton.style.display = 'none';
+    }
+};
+
+// Attach to onchange event of the patrons input field
+document.querySelector('.patrons').addEventListener('change', updateReloadButtonVisibility);
+
+// Initial check to set the button visibility correctly on page load
+updateReloadButtonVisibility();
