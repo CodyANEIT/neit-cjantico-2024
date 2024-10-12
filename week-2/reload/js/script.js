@@ -1,3 +1,13 @@
+// Add initial center image to ensure it stays at all times
+let initialCenterImage = document.createElement('img');
+initialCenterImage.src = 'images/aim.png'; // Replace with your image path
+initialCenterImage.style.position = 'fixed';
+initialCenterImage.style.left = '50%';
+initialCenterImage.style.top = '50%';
+initialCenterImage.style.transform = 'translate(-50%, -50%)';
+initialCenterImage.style.zIndex = '1'; // Lower z-index to stay behind the clicked images
+document.body.appendChild(initialCenterImage);
+
 document.onclick = (event) => {
     // Check if the clicked element is not the reload button or fire button
     if (!reloadButton.contains(event.target) && !fireButton.contains(event.target)) {
@@ -18,6 +28,7 @@ document.onclick = (event) => {
             img.style.top = `${event.pageY}px`;
             img.style.transform = 'translate(-50%, -50%) scale(0)';
             img.style.transition = 'transform 0.1s, opacity 0.15s';
+            img.style.zIndex = '2'; // Higher z-index for clicked images
             document.body.appendChild(img);
 
             document.body.style.overflow = 'hidden';
@@ -59,6 +70,7 @@ reloadButton.style.position = 'fixed';
 reloadButton.style.bottom = '20px';
 reloadButton.style.left = '50%';
 reloadButton.style.transform = 'translateX(-50%)';
+reloadButton.style.zIndex = '3'; // Ensure the button is above other elements
 reloadButton.onclick = () => {
     let event = new KeyboardEvent('keydown', {'code': 'KeyR'});
     document.dispatchEvent(event);
@@ -72,6 +84,7 @@ fireButton.style.position = 'fixed';
 fireButton.style.bottom = '80px'; // Raised higher above the RELOAD button
 fireButton.style.left = '50%';
 fireButton.style.transform = 'translateX(-50%)';
+fireButton.style.zIndex = '3'; // Ensure the button is above other elements
 fireButton.onclick = () => {
     // Simulate a click in the center of the screen
     let event = new MouseEvent('click', {
