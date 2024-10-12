@@ -1,42 +1,43 @@
 document.onclick = (event) => {
-    let patronsValue = +document.querySelector('.patrons').value--;
-    let audio = new Audio();
-    audio.src = './sounds/shot.mp3';
-    let audioEmpty = new Audio();
-    audioEmpty.src = './sounds/emptyshot.wav';
+    // Check if the clicked element is not the reload button or fire button
+    if (!reloadButton.contains(event.target) && !fireButton.contains(event.target)) {
+        let patronsValue = +document.querySelector('.patrons').value--;
+        let audio = new Audio();
+        audio.src = './sounds/shot.mp3';
+        let audioEmpty = new Audio();
+        audioEmpty.src = './sounds/emptyshot.wav';
 
-    if (patronsValue <= 5 && patronsValue > 0) {
-        audio.autoplay = true;
-        audioEmpty.autoplay = false;
+        if (patronsValue <= 5 && patronsValue > 0) {
+            audio.autoplay = true;
+            audioEmpty.autoplay = false;
 
-        let img = document.createElement('img');
-        img.src = 'images/flash.png';
-        img.style.position = 'absolute';
-        img.style.left = `${event.pageX}px`;
-        img.style.top = `${event.pageY}px`;
-        img.style.transform = 'translate(-50%, -50%) scale(0)';
-        img.style.transition = 'transform 0.1s, opacity 0.15s';
-        document.body.appendChild(img);
+            let img = document.createElement('img');
+            img.src = 'images/flash.png';
+            img.style.position = 'absolute';
+            img.style.left = `${event.pageX}px`;
+            img.style.top = `${event.pageY}px`;
+            img.style.transform = 'translate(-50%, -50%) scale(0)';
+            img.style.transition = 'transform 0.1s, opacity 0.15s';
+            document.body.appendChild(img);
 
-        document.body.style.overflow = 'hidden';
-        setTimeout(() => {
-            img.style.transform = 'translate(-50%, -50%) scale(1)';
-        }, 0);
-
-        setTimeout(() => {
-            img.style.opacity = '0';
+            document.body.style.overflow = 'hidden';
             setTimeout(() => {
-                document.body.removeChild(img);
-                document.body.style.overflow = '';
-            }, 150);
-        }, 150);
-    } else {
-        document.querySelector('.patrons').value++;
-        audioEmpty.autoplay = true;
-        audio.autoplay = false;
-    }
+                img.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 0);
 
-    updateReloadButtonVisibility(); // Update button visibility
+            setTimeout(() => {
+                img.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(img);
+                    document.body.style.overflow = '';
+                }, 150);
+            }, 150);
+        } else {
+            document.querySelector('.patrons').value++;
+            audioEmpty.autoplay = true;
+            audio.autoplay = false;
+        }
+    }
 };
 
 // When reloaded (R Press) the reloading effect will play as the count resets.
@@ -58,24 +59,27 @@ reloadButton.style.position = 'fixed';
 reloadButton.style.bottom = '20px';
 reloadButton.style.left = '50%';
 reloadButton.style.transform = 'translateX(-50%)';
-reloadButton.style.display = 'none'; // Initially hidden
 reloadButton.onclick = () => {
     let event = new KeyboardEvent('keydown', {'code': 'KeyR'});
     document.dispatchEvent(event);
 };
 document.body.appendChild(reloadButton);
 
-// Show the button when patrons count is 0 and hide otherwise
-const updateReloadButtonVisibility = () => {
-    if (document.querySelector('.patrons').value == 0) {
-        reloadButton.style.display = 'block';
-    } else {
-        reloadButton.style.display = 'none';
-    }
+// Create a "FIRE" button
+const fireButton = document.createElement('button');
+fireButton.innerText = 'FIRE';
+fireButton.style.position = 'fixed';
+fireButton.style.bottom = '80px'; // Raised higher above the RELOAD button
+fireButton.style.left = '50%';
+fireButton.style.transform = 'translateX(-50%)';
+fireButton.onclick = () => {
+    // Simulate a click in the center of the screen
+    let event = new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        clientX: window.innerWidth / 2,
+        clientY: window.innerHeight / 2
+    });
+    document.dispatchEvent(event);
 };
-
-// Attach to onchange event of the patrons input field
-document.querySelector('.patrons').addEventListener('change', updateReloadButtonVisibility);
-
-// Initial check to set the button visibility correctly on page load
-updateReloadButtonVisibility();
+document.body.appendChild(fireButton);
