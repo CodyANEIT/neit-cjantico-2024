@@ -11,7 +11,7 @@ ctx.strokeRect(85, 300, 100, 100);
 // Shape 2: Circle
 ctx.fillStyle = "rgb(255,255,0)";
 ctx.beginPath();
-ctx.arc(385 + 66, 440 + 66, 66, 0, Math.PI * 2);
+ctx.arc(385, 440, 66, 0, Math.PI * 2);
 ctx.closePath();
 ctx.fill();
 ctx.lineWidth = 5;
