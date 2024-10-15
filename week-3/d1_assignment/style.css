@@ -1,0 +1,54 @@
+html,body{
+    margin:0;
+    height:100%;
+}
+body{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+canvas{
+    border:1px solid black;
+    background-image:url(images/shapes.png);
+   
+}
+
+.shape1{
+    position: absolute 85 300;
+    height: 100px;
+    width: 100;
+    border: black 5px wide;
+    fill:yellow
+}
+
+.shape2{
+    position: absolute 385 440;
+    height: 132px;
+    width: 132;
+    border: red 5px wide;
+    fill:rgb(255,255,0)
+}
+
+.shape3{
+    position: absolute 557 308;
+    height: 100px;
+    width: 100;
+    border: rgb(0,255,255) 5px wide;
+    fill:rgb(255, 0, 255)
+}
+
+.shape4{
+    position: absolute 385 440;
+    height: 100px;
+    width: 100;
+    border: black 5px wide;
+    fill:rgb(255,255,0)
+}
+
+.shape5{
+    position: absolute 385 440;
+    height: 100px;
+    width: 100;
+    border: rgb(255, 0, 0) 5px wide;
+    fill:none
+}
