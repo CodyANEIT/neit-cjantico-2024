@@ -8,18 +8,21 @@ initialCenterImage.style.transform = 'translate(-50%, -50%)';
 initialCenterImage.style.zIndex = '1'; // Lower z-index to stay behind the clicked images
 document.body.appendChild(initialCenterImage);
 
+// Variables for ammo
+let clipSize = 6;
+let totalAmmo = 18;
+let remainingAmmo = totalAmmo;
+let currentClip = clipSize;
+
 document.onclick = (event) => {
     // Check if the clicked element is not the reload button or fire button
     if (!reloadButton.contains(event.target) && !fireButton.contains(event.target)) {
-        let patronsValue = +document.querySelector('.patrons').value--;
-        let audio = new Audio();
-        audio.src = './sounds/shot.mp3';
-        let audioEmpty = new Audio();
-        audioEmpty.src = './sounds/emptyshot.wav';
-
-        if (patronsValue <= 5 && patronsValue > 0) {
+        if (currentClip > 0) {
+            currentClip--;
+            remainingAmmo--;
+            let audio = new Audio();
+            audio.src = './sounds/shot.mp3';
             audio.autoplay = true;
-            audioEmpty.autoplay = false;
 
             let img = document.createElement('img');
             img.src = 'images/flash.png';
@@ -30,12 +33,10 @@ document.onclick = (event) => {
             img.style.transition = 'transform 0.1s, opacity 0.15s';
             img.style.zIndex = '2'; // Higher z-index for clicked images
             document.body.appendChild(img);
-
             document.body.style.overflow = 'hidden';
             setTimeout(() => {
                 img.style.transform = 'translate(-50%, -50%) scale(1)';
             }, 0);
-
             setTimeout(() => {
                 img.style.opacity = '0';
                 setTimeout(() => {
@@ -43,23 +44,25 @@ document.onclick = (event) => {
                     document.body.style.overflow = '';
                 }, 150);
             }, 150);
-        } else {
-            document.querySelector('.patrons').value++;
+        } else if (remainingAmmo > 0) {
+            let audioEmpty = new Audio();
+            audioEmpty.src = './sounds/emptyshot.wav';
             audioEmpty.autoplay = true;
-            audio.autoplay = false;
         }
     }
 };
 
 // When reloaded (R Press) the reloading effect will play as the count resets.
 document.addEventListener('keydown', function(event) {
-    let audio3 = new Audio();
-    audio3.src = './sounds/reload.wav';
-    if (event.code === 'KeyR' && document.querySelector('.patrons').value < 5) {
+    if (event.code === 'KeyR' && currentClip < clipSize && remainingAmmo > 0) {
+        let audio3 = new Audio();
+        audio3.src = './sounds/reload.wav';
         audio3.autoplay = true;
-        document.querySelector('.patrons').value = 5;
-    } else {
-        audio3.autoplay = false;
+        if (remainingAmmo >= clipSize) {
+            currentClip = clipSize;
+        } else {
+            currentClip = remainingAmmo;
+        }
     }
 });
 
