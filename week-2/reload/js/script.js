@@ -14,12 +14,28 @@ let totalAmmo = 18;
 let remainingAmmo = totalAmmo;
 let currentClip = clipSize;
 
+// Ammo display
+let ammoDisplay = document.createElement('div');
+ammoDisplay.style.position = 'fixed';
+ammoDisplay.style.top = '10px';
+ammoDisplay.style.left = '10px';
+ammoDisplay.style.color = '#f59517';
+ammoDisplay.style.fontFamily = '"Western", cursive';
+ammoDisplay.style.fontSize = '24px';
+ammoDisplay.style.zIndex = '4';
+document.body.appendChild(ammoDisplay);
+updateAmmoDisplay();
+
+function updateAmmoDisplay() {
+    ammoDisplay.innerHTML = `Ammo: ${currentClip} / ${remainingAmmo}`;
+}
+
 document.onclick = (event) => {
-    // Check if the clicked element is not the reload button or fire button
     if (!reloadButton.contains(event.target) && !fireButton.contains(event.target)) {
         if (currentClip > 0) {
             currentClip--;
             remainingAmmo--;
+            updateAmmoDisplay();
             let audio = new Audio();
             audio.src = './sounds/shot.mp3';
             audio.autoplay = true;
@@ -31,7 +47,7 @@ document.onclick = (event) => {
             img.style.top = `${event.pageY}px`;
             img.style.transform = 'translate(-50%, -50%) scale(0)';
             img.style.transition = 'transform 0.1s, opacity 0.15s';
-            img.style.zIndex = '2'; // Higher z-index for clicked images
+            img.style.zIndex = '2';
             document.body.appendChild(img);
             document.body.style.overflow = 'hidden';
             setTimeout(() => {
@@ -52,7 +68,6 @@ document.onclick = (event) => {
     }
 };
 
-// When reloaded (R Press) the reloading effect will play as the count resets.
 document.addEventListener('keydown', function(event) {
     if (event.code === 'KeyR' && currentClip < clipSize && remainingAmmo > 0) {
         let audio3 = new Audio();
@@ -63,6 +78,7 @@ document.addEventListener('keydown', function(event) {
         } else {
             currentClip = remainingAmmo;
         }
+        updateAmmoDisplay();
     }
 });
 
@@ -73,7 +89,7 @@ reloadButton.style.position = 'fixed';
 reloadButton.style.bottom = '20px';
 reloadButton.style.left = '50%';
 reloadButton.style.transform = 'translateX(-50%)';
-reloadButton.style.zIndex = '3'; // Ensure the button is above other elements
+reloadButton.style.zIndex = '3';
 reloadButton.onclick = () => {
     let event = new KeyboardEvent('keydown', {'code': 'KeyR'});
     document.dispatchEvent(event);
@@ -84,12 +100,11 @@ document.body.appendChild(reloadButton);
 const fireButton = document.createElement('button');
 fireButton.innerText = 'FIRE';
 fireButton.style.position = 'fixed';
-fireButton.style.bottom = '80px'; // Raised higher above the RELOAD button
+fireButton.style.bottom = '80px';
 fireButton.style.left = '50%';
 fireButton.style.transform = 'translateX(-50%)';
-fireButton.style.zIndex = '3'; // Ensure the button is above other elements
+fireButton.style.zIndex = '3';
 fireButton.onclick = () => {
-    // Simulate a click in the center of the screen
     let event = new MouseEvent('click', {
         bubbles: true,
         cancelable: true,

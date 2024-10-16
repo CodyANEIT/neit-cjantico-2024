@@ -1,11 +1,13 @@
+/* Universal styles */
 * {
     cursor: url("crosshair.png") 53 53, crosshair;
     font-size: 28px;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-family: 'Western', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     color: #f59517;
     text-shadow: -1px -1px 0 rgb(39, 39, 39), 1px -1px 0 rgb(39, 39, 39), 1px 1px 0 rgb(39, 39, 39), 1px 1px 0 rgb(39, 39, 39);
 }
 
+/* Input styles */
 input {
     outline: none;
     border: none;
@@ -43,4 +45,15 @@ button:hover {
 
 button:active {
     background-color: #b26512;
+}
+
+/* Ammo display styles */
+.ammoDisplay {
+    font-family: 'Western', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 24px;
+    color: #f59517;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 4;
 }
