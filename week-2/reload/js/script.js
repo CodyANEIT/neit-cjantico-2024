@@ -1,11 +1,10 @@
-// Add initial center image to ensure it stays at all times
 let initialCenterImage = document.createElement('img');
-initialCenterImage.src = 'images/aim.png'; // Replace with your image path
+initialCenterImage.src = 'images/aim.png'; 
 initialCenterImage.style.position = 'fixed';
 initialCenterImage.style.left = '50%';
 initialCenterImage.style.top = '50%';
 initialCenterImage.style.transform = 'translate(-50%, -50%)';
-initialCenterImage.style.zIndex = '1'; // Lower z-index to stay behind the clicked images
+initialCenterImage.style.zIndex = '1'; 
 document.body.appendChild(initialCenterImage);
 
 // Variables for ammo
@@ -82,7 +81,6 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// Create a "RELOAD" button
 const reloadButton = document.createElement('button');
 reloadButton.innerText = 'RELOAD';
 reloadButton.style.position = 'fixed';
@@ -96,7 +94,6 @@ reloadButton.onclick = () => {
 };
 document.body.appendChild(reloadButton);
 
-// Create a "FIRE" button
 const fireButton = document.createElement('button');
 fireButton.innerText = 'FIRE';
 fireButton.style.position = 'fixed';
