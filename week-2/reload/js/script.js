@@ -1,17 +1,18 @@
+// Add initial center image to ensure it stays at all times
 let initialCenterImage = document.createElement('img');
-initialCenterImage.src = 'images/aim.png'; 
+initialCenterImage.src = 'images/aim.png'; // Replace with your image path
 initialCenterImage.style.position = 'fixed';
 initialCenterImage.style.left = '50%';
 initialCenterImage.style.top = '50%';
 initialCenterImage.style.transform = 'translate(-50%, -50%)';
-initialCenterImage.style.zIndex = '1'; 
+initialCenterImage.style.zIndex = '1'; // Lower z-index to stay behind the clicked images
 document.body.appendChild(initialCenterImage);
 
 // Variables for ammo
 let clipSize = 6;
 let totalAmmo = 18;
-let remainingAmmo = totalAmmo;
 let currentClip = clipSize;
+let remainingAmmo = totalAmmo - clipSize; // Ammo left after initial clip
 
 // Ammo display
 let ammoDisplay = document.createElement('div');
@@ -33,7 +34,6 @@ document.onclick = (event) => {
     if (!reloadButton.contains(event.target) && !fireButton.contains(event.target)) {
         if (currentClip > 0) {
             currentClip--;
-            remainingAmmo--;
             updateAmmoDisplay();
             let audio = new Audio();
             audio.src = './sounds/shot.mp3';
@@ -59,7 +59,7 @@ document.onclick = (event) => {
                     document.body.style.overflow = '';
                 }, 150);
             }, 150);
-        } else if (remainingAmmo > 0) {
+        } else {
             let audioEmpty = new Audio();
             audioEmpty.src = './sounds/emptyshot.wav';
             audioEmpty.autoplay = true;
@@ -73,14 +73,17 @@ document.addEventListener('keydown', function(event) {
         audio3.src = './sounds/reload.wav';
         audio3.autoplay = true;
         if (remainingAmmo >= clipSize) {
+            remainingAmmo -= (clipSize - currentClip);
             currentClip = clipSize;
         } else {
             currentClip = remainingAmmo;
+            remainingAmmo = 0;
         }
         updateAmmoDisplay();
     }
 });
 
+// Create a "RELOAD" button
 const reloadButton = document.createElement('button');
 reloadButton.innerText = 'RELOAD';
 reloadButton.style.position = 'fixed';
@@ -94,6 +97,7 @@ reloadButton.onclick = () => {
 };
 document.body.appendChild(reloadButton);
 
+// Create a "FIRE" button
 const fireButton = document.createElement('button');
 fireButton.innerText = 'FIRE';
 fireButton.style.position = 'fixed';
