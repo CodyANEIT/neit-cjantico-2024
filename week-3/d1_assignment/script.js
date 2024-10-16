@@ -18,7 +18,19 @@ ctx.lineWidth = 5;
 ctx.strokeStyle = "red";
 ctx.stroke();
 
-// Shape 3: Circle
+// Shape 3: Pentagon
+ctx.fillStyle = "rgb(255, 0, 255)";
+ctx.lineWidth = 5;
+ctx.strokeStyle = "rgb(0,255,255)";
+ctx.beginPath();
+ctx.moveTo(557, 308); // Starting at the given absolute value
+ctx.lineTo(667, 284); // Point 2
+ctx.lineTo(724, 380); // Point 3
+ctx.lineTo(650, 464); // Point 4
+ctx.lineTo(546, 420); // Point 5
+ctx.closePath();
+ctx.fill();
+ctx.stroke();
 
 
 
