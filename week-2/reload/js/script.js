@@ -1,4 +1,10 @@
-// Add initial center image to ensure it stays at all times
+let totalAmmo = 10;
+let currentClip = 5;
+const maxClip = 5;
+
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+
 let initialCenterImage = document.createElement('img');
 initialCenterImage.src = 'images/aim.png'; // Replace with your image path
 initialCenterImage.style.position = 'fixed';
@@ -9,18 +15,12 @@ initialCenterImage.style.zIndex = '1'; // Lower z-index to stay behind the click
 document.body.appendChild(initialCenterImage);
 
 document.onclick = (event) => {
-    // Check if the clicked element is not the reload button or fire button
     if (!reloadButton.contains(event.target) && !fireButton.contains(event.target)) {
-        let patronsValue = +document.querySelector('.patrons').value--;
-        let audio = new Audio();
-        audio.src = './sounds/shot.mp3';
-        let audioEmpty = new Audio();
-        audioEmpty.src = './sounds/emptyshot.wav';
-
-        if (patronsValue <= 5 && patronsValue > 0) {
+        if (currentClip > 0) {
+            let audio = new Audio();
+            audio.src = './sounds/shot.mp3';
             audio.autoplay = true;
-            audioEmpty.autoplay = false;
-
+            
             let img = document.createElement('img');
             img.src = 'images/flash.png';
             img.style.position = 'absolute';
@@ -30,8 +30,8 @@ document.onclick = (event) => {
             img.style.transition = 'transform 0.1s, opacity 0.15s';
             img.style.zIndex = '2'; // Higher z-index for clicked images
             document.body.appendChild(img);
-
             document.body.style.overflow = 'hidden';
+
             setTimeout(() => {
                 img.style.transform = 'translate(-50%, -50%) scale(1)';
             }, 0);
@@ -43,27 +43,33 @@ document.onclick = (event) => {
                     document.body.style.overflow = '';
                 }, 150);
             }, 150);
+
+            currentClip--;
+            document.querySelector('.patrons').value = currentClip;
+
         } else {
-            document.querySelector('.patrons').value++;
+            let audioEmpty = new Audio();
+            audioEmpty.src = './sounds/emptyshot.wav';
             audioEmpty.autoplay = true;
-            audio.autoplay = false;
         }
     }
 };
 
-// When reloaded (R Press) the reloading effect will play as the count resets.
 document.addEventListener('keydown', function(event) {
-    let audio3 = new Audio();
-    audio3.src = './sounds/reload.wav';
-    if (event.code === 'KeyR' && document.querySelector('.patrons').value < 5) {
-        audio3.autoplay = true;
-        document.querySelector('.patrons').value = 5;
-    } else {
-        audio3.autoplay = false;
+    if (event.code === 'KeyR') {
+        if (totalAmmo > 0 && currentClip < maxClip) {
+            let audio3 = new Audio();
+            audio3.src = './sounds/reload.wav';
+            audio3.autoplay = true;
+
+            let ammoToReload = Math.min(maxClip - currentClip, totalAmmo);
+            totalAmmo -= ammoToReload;
+            currentClip += ammoToReload;
+            document.querySelector('.patrons').value = currentClip;
+        }
     }
 });
 
-// Create a "RELOAD" button
 const reloadButton = document.createElement('button');
 reloadButton.innerText = 'RELOAD';
 reloadButton.style.position = 'fixed';
@@ -77,7 +83,6 @@ reloadButton.onclick = () => {
 };
 document.body.appendChild(reloadButton);
 
-// Create a "FIRE" button
 const fireButton = document.createElement('button');
 fireButton.innerText = 'FIRE';
 fireButton.style.position = 'fixed';
@@ -86,7 +91,6 @@ fireButton.style.left = '50%';
 fireButton.style.transform = 'translateX(-50%)';
 fireButton.style.zIndex = '3'; // Ensure the button is above other elements
 fireButton.onclick = () => {
-    // Simulate a click in the center of the screen
     let event = new MouseEvent('click', {
         bubbles: true,
         cancelable: true,

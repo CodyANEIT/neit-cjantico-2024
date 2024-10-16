@@ -38,7 +38,7 @@ canvas{
 }
 
 .shape4{
-    position: absolute 385 440;
+    position: absolute 635 496;
     height: 100px;
     width: 100;
     border: black 5px wide;
@@ -46,7 +46,7 @@ canvas{
 }
 
 .shape5{
-    position: absolute 385 440;
+    position: absolute 85 682;
     height: 100px;
     width: 100;
     border: rgb(255, 0, 0) 5px wide;
