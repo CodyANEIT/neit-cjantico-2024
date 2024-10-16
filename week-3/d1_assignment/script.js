@@ -38,11 +38,18 @@ ctx.stroke();
 
 
 // Shape 4: Star
-
-
-
-
-
+ctx.fillStyle = "rgb(255,255,0)";
+ctx.lineWidth = 5;
+ctx.strokeStyle = "black";
+ctx.beginPath();
+ctx.moveTo(635, 496); // Top point
+ctx.lineTo(773, 567); // Middle right point
+ctx.lineTo(538, 567); // Middle left point
+ctx.lineTo(696, 681); // Bottom right point
+ctx.lineTo(575, 681); // Bottom left point
+ctx.closePath();
+ctx.fill();
+ctx.stroke();
 
 // Shape 5: Line
 ctx.lineWidth = 5;
