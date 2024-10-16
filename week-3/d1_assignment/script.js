@@ -25,7 +25,7 @@ ctx.stroke();
 
 
 
-// Shape 4: Circle
+// Shape 4: Star
 
 
 
@@ -37,6 +37,6 @@ ctx.lineWidth = 5;
 ctx.strokeStyle = "rgb(255, 0, 0)";
 ctx.beginPath();
 ctx.moveTo(85, 682); 
-ctx.lineTo(287, 550); 
+ctx.lineTo(278, 549); 
 ctx.stroke();
-ctx.closePath();
+ctx.closePath(); 
