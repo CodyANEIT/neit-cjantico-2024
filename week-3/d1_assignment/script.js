@@ -17,3 +17,26 @@ ctx.fill();
 ctx.lineWidth = 5;
 ctx.strokeStyle = "red";
 ctx.stroke();
+
+// Shape 3: Circle
+
+
+
+
+
+
+// Shape 4: Circle
+
+
+
+
+
+
+// Shape 5: Line
+ctx.lineWidth = 5;
+ctx.strokeStyle = "rgb(255, 0, 0)";
+ctx.beginPath();
+ctx.moveTo(85, 682); 
+ctx.lineTo(287, 550); 
+ctx.stroke();
+ctx.closePath();
