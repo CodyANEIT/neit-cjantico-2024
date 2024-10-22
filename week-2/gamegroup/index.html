@@ -22,12 +22,6 @@
             height: 100%;
         }
 
-        /* Prevent image dragging */
-        img {
-            pointer-events: auto; /* Allow mouse events on images */
-            -webkit-user-drag: none; /* Non-standard for WebKit */
-        }
-
         /* Universal styles */
         * {
             cursor: url("crosshair.png") 53 53, crosshair;
@@ -133,8 +127,8 @@
         /* Flash effect styles */
         .flash {
             position: absolute;
-            width: 900px; /* Adjust flash size to be larger */
-            height: 900px; /* Adjust flash size to be larger */
+            width: 300px; /* Adjust flash size to be larger */
+            height: 300px; /* Adjust flash size to be larger */
             z-index: 5;
             opacity: 1;
             transition: transform 0.1s, opacity 0.15s;
@@ -236,7 +230,8 @@
                 
                 if (Math.random() < 0.1) { // 10% chance to spawn a bonus target (aim2)
                     createBonusTarget(randomX, randomY);
-                } else if (Math.random() < 0.05) { // 5% chance to spawn a special target (aim3)
+                }
+                if (Math.random() < 0.05) { // 5% chance to spawn aim3
                     createSpecialTarget(randomX, randomY);
                 }
             };
@@ -363,13 +358,6 @@
         document.addEventListener('keydown', function(event) {
             if (event.code === 'KeyR' && gameStarted) {
                 reloadAmmo();
-            }
-        });
-
-        // Prevent right-click context menu on images
-        document.addEventListener('contextmenu', (event) => {
-            if (event.target.tagName === 'IMG') {
-                event.preventDefault();
             }
         });
     </script>
