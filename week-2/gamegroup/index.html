@@ -207,8 +207,10 @@
             document.body.appendChild(target);
 
             target.onclick = () => {
-                score += 50;
-                updateScoreDisplay();
+                if (currentClip > 0) { // Only score if there is ammo
+                    score += 50;
+                    updateScoreDisplay();
+                }
                 document.body.removeChild(target);
                 if (Math.random() < 0.2) { // 20% chance to spawn a bonus target
                     createBonusTarget(randomX, randomY);
@@ -234,10 +236,12 @@
             document.body.appendChild(bonusTarget);
 
             bonusTarget.onclick = () => {
-                score += 100;
-                remainingAmmo += 6; // Reload 6 ammo
-                updateScoreDisplay();
-                updateAmmoDisplay();
+                if (currentClip > 0) { // Only score if there is ammo
+                    score += 100;
+                    remainingAmmo += 6; // Bonus ammo
+                    updateAmmoDisplay();
+                    updateScoreDisplay();
+                }
                 document.body.removeChild(bonusTarget);
             };
 
@@ -273,7 +277,7 @@
         }
 
         document.onclick = (event) => {
-            if (gameStarted) {
+            if (gameStarted && event.target !== startButton && event.target !== restartButton) {
                 if (currentClip > 0) {
                     currentClip--;
                     updateAmmoDisplay();
