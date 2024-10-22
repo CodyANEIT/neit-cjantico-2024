@@ -123,6 +123,16 @@
         #reloadButton:active {
             background-color: #b26512;
         }
+
+        /* Flash effect styles */
+        .flash {
+            position: absolute;
+            width: 100px; /* Adjust flash size */
+            height: 100px; /* Adjust flash size */
+            z-index: 5;
+            opacity: 1;
+            transition: transform 0.1s, opacity 0.15s;
+        }
     </style>
 </head>
 <body>
@@ -135,7 +145,7 @@
 
     <script>
         let clipSize = 6;
-        let totalAmmo = 20; // Updated ammo reserve
+        let totalAmmo = 24; // Updated ammo reserve
         let currentClip = clipSize;
         let remainingAmmo = totalAmmo - clipSize;
         let score = 0;
@@ -195,24 +205,25 @@
             const target = document.createElement('img');
             target.src = 'images/aim.png'; // Regular target image
             target.style.position = 'absolute';
-            target.style.width = '300px'; // Increased size
-            target.style.height = '300px'; // Increased size
+            target.style.width = '450px'; // Increased size
+            target.style.height = '450px'; // Increased size
             target.style.zIndex = '1';
 
-            const randomX = Math.random() * (window.innerWidth - 300);
-            const randomY = Math.random() * (window.innerHeight - 300);
+            const randomX = Math.random() * (window.innerWidth - 450);
+            const randomY = Math.random() * (window.innerHeight - 450);
 
             target.style.left = `${randomX}px`;
             target.style.top = `${randomY}px`;
             document.body.appendChild(target);
 
             target.onclick = () => {
+                createFlash(event.pageX, event.pageY); // Create flash effect on click
                 if (currentClip > 0) { // Only score if there is ammo
                     score += 50;
                     updateScoreDisplay();
                 }
                 document.body.removeChild(target);
-                if (Math.random() < 0.15) { // 15% chance to spawn a bonus target (aim2)
+                if (Math.random() < 0.1) { // 10% chance to spawn a bonus target (aim2)
                     createBonusTarget(randomX, randomY);
                 }
                 if (Math.random() < 0.05) { // 5% chance to spawn aim3
@@ -231,16 +242,17 @@
             const bonusTarget = document.createElement('img');
             bonusTarget.src = 'images/aim2.png'; // Bonus target image
             bonusTarget.style.position = 'absolute';
-            bonusTarget.style.width = '300px'; // Increased size
-            bonusTarget.style.height = '300px'; // Increased size
+            bonusTarget.style.width = '450px'; // Increased size
+            bonusTarget.style.height = '450px'; // Increased size
             bonusTarget.style.zIndex = '1';
             bonusTarget.style.left = `${x}px`;
             bonusTarget.style.top = `${y}px`;
             document.body.appendChild(bonusTarget);
 
             bonusTarget.onclick = () => {
+                createFlash(event.pageX, event.pageY); // Create flash effect on click
                 if (currentClip > 0) {
-                    score += 100;
+                    score += 100; // Bonus score
                     remainingAmmo += 6; // Bonus ammo
                     updateAmmoDisplay();
                     updateScoreDisplay();
@@ -259,16 +271,17 @@
             const specialTarget = document.createElement('img');
             specialTarget.src = 'images/aim3.png'; // New special target image
             specialTarget.style.position = 'absolute';
-            specialTarget.style.width = '300px'; // Increased size
-            specialTarget.style.height = '300px'; // Increased size
+            specialTarget.style.width = '450px'; // Increased size
+            specialTarget.style.height = '450px'; // Increased size
             specialTarget.style.zIndex = '1';
             specialTarget.style.left = `${x}px`;
             specialTarget.style.top = `${y}px`;
             document.body.appendChild(specialTarget);
 
             specialTarget.onclick = () => {
+                createFlash(event.pageX, event.pageY); // Create flash effect on click
                 if (currentClip > 0) {
-                    score += 150;
+                    score += 150; // Special score
                     gameTime += 10; // Increase time by 10 seconds
                     updateScoreDisplay();
                     updateTimerDisplay();
@@ -281,6 +294,22 @@
                     document.body.removeChild(specialTarget);
                 }
             }, 2000);
+        }
+
+        function createFlash(x, y) {
+            const flash = document.createElement('img');
+            flash.src = 'images/flash.png'; // Flash effect image
+            flash.className = 'flash';
+            flash.style.left = `${x - 50}px`; // Center the flash
+            flash.style.top = `${y - 50}px`; // Center the flash
+            document.body.appendChild(flash);
+
+            setTimeout(() => {
+                flash.style.opacity = '0'; // Fade out effect
+                setTimeout(() => {
+                    document.body.removeChild(flash);
+                }, 150);
+            }, 50);
         }
 
         function endGame() {
@@ -315,6 +344,7 @@
                     updateAmmoDisplay();
                     let audio = new Audio('./sounds/shot.mp3');
                     audio.play();
+                    createFlash(event.pageX, event.pageY); // Create flash effect on click
                 } else {
                     let audioEmpty = new Audio('./sounds/emptyshot.wav');
                     audioEmpty.play();
