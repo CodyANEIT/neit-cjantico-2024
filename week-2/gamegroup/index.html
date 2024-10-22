@@ -193,14 +193,14 @@
 
         function createTarget() {
             const target = document.createElement('img');
-            target.src = 'images/aim.png'; // Target image
+            target.src = 'images/aim.png'; // Regular target image
             target.style.position = 'absolute';
-            target.style.width = '50px';
-            target.style.height = '50px';
+            target.style.width = '200px'; // Increased size
+            target.style.height = '200px'; // Increased size
             target.style.zIndex = '1';
 
-            const randomX = Math.random() * (window.innerWidth - 50);
-            const randomY = Math.random() * (window.innerHeight - 50);
+            const randomX = Math.random() * (window.innerWidth - 200);
+            const randomY = Math.random() * (window.innerHeight - 200);
 
             target.style.left = `${randomX}px`;
             target.style.top = `${randomY}px`;
@@ -212,7 +212,7 @@
                     updateScoreDisplay();
                 }
                 document.body.removeChild(target);
-                if (Math.random() < 0.2) { // 20% chance to spawn a bonus target
+                if (Math.random() < 0.1) { // 10% chance to spawn a bonus target
                     createBonusTarget(randomX, randomY);
                 }
             };
@@ -228,8 +228,8 @@
             const bonusTarget = document.createElement('img');
             bonusTarget.src = 'images/aim2.png'; // Bonus target image
             bonusTarget.style.position = 'absolute';
-            bonusTarget.style.width = '50px';
-            bonusTarget.style.height = '50px';
+            bonusTarget.style.width = '200px'; // Increased size
+            bonusTarget.style.height = '200px'; // Increased size
             bonusTarget.style.zIndex = '1';
             bonusTarget.style.left = `${x}px`;
             bonusTarget.style.top = `${y}px`;
@@ -257,6 +257,7 @@
             clearInterval(targetInterval);
             gameStarted = false;
             restartButton.style.display = 'block';
+            reloadButton.style.display = 'none'; // Hide reload button when game ends
             alert(`Game Over! Your score: ${score}`);
         }
 
