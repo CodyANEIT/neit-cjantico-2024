@@ -1,0 +1,59 @@
+/* Universal styles */
+* {
+    cursor: url("crosshair.png") 53 53, crosshair;
+    font-size: 28px;
+    font-family: 'Western', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: #f59517;
+    text-shadow: -1px -1px 0 rgb(39, 39, 39), 1px -1px 0 rgb(39, 39, 39), 1px 1px 0 rgb(39, 39, 39), 1px 1px 0 rgb(39, 39, 39);
+}
+
+/* Input styles */
+input {
+    outline: none;
+    border: none;
+    width: 15px;
+    cursor: default;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    cursor: default;
+}
+
+.all {
+    width: 38px;
+}
+
+/* Button styles */
+button {
+    padding: 10px 20px;
+    font-size: 28px;
+    background-color: #f59517;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-shadow: -1px -1px 0 rgb(39, 39, 39), 1px -1px 0 rgb(39, 39, 39), 1px 1px 0 rgb(39, 39, 39), 1px 1px 0 rgb(39, 39, 39);
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #d37814;
+}
+
+button:active {
+    background-color: #b26512;
+}
+
+/* Ammo display styles */
+.ammoDisplay {
+    font-family: 'Western', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 24px;
+    color: #f59517;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 4;
+}
