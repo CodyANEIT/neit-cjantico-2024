@@ -7,9 +7,21 @@
     <title>Week 2 Gun Program</title>
     <meta name="author" content="Cody Antico">
     <meta name="description" content="Small programming assignment using events, variables, functions and conditional logic">
-    <link rel="stylesheet" href="./css/style.css">
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <style>
+        /* Prevent text selection */
+        body {
+            user-select: none; /* Prevent text selection in modern browsers */
+            -webkit-user-select: none; /* Prevent text selection in Safari */
+            -moz-user-select: none; /* Prevent text selection in Firefox */
+        }
+
+        /* Prevent scrolling */
+        html, body {
+            overflow: hidden; /* Prevent scrolling */
+            height: 100%; /* Ensure body takes full height */
+        }
+
         /* Universal styles */
         * {
             cursor: url("crosshair.png") 53 53, crosshair;
@@ -84,6 +96,33 @@
         #startButton:active, #restartButton:active {
             background-color: #b26512;
         }
+
+        /* Reload button */
+        #reloadButton {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            padding: 10px 20px;
+            font-size: 28px;
+            background-color: #f59517;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-shadow: -1px -1px 0 rgb(39, 39, 39), 1px -1px 0 rgb(39, 39, 39), 1px 1px 0 rgb(39, 39, 39), 1px 1px 0 rgb(39, 39, 39);
+            transition: background-color 0.3s;
+            display: none; /* Hide reload button initially */
+        }
+
+        #reloadButton:hover {
+            background-color: #d37814;
+        }
+
+        #reloadButton:active {
+            background-color: #b26512;
+        }
     </style>
 </head>
 <body>
@@ -92,6 +131,8 @@
     <div id="timerDisplay">Time: 60</div>
     <button id="startButton">START GAME</button>
     <button id="restartButton" style="display: none;">RESTART</button>
+    <button id="reloadButton">RELOAD</button>
+
     <script>
         let clipSize = 6;
         let totalAmmo = 18;
@@ -108,9 +149,11 @@
         const timerDisplay = document.getElementById('timerDisplay');
         const startButton = document.getElementById('startButton');
         const restartButton = document.getElementById('restartButton');
+        const reloadButton = document.getElementById('reloadButton');
 
         function updateAmmoDisplay() {
             ammoDisplay.innerHTML = `Ammo: ${currentClip} / ${remainingAmmo}`;
+            reloadButton.style.display = (currentClip < clipSize && remainingAmmo > 0) ? 'block' : 'none';
         }
 
         function updateScoreDisplay() {
@@ -123,6 +166,7 @@
 
         startButton.onclick = startGame;
         restartButton.onclick = restartGame;
+        reloadButton.onclick = reloadAmmo;
 
         function startGame() {
             gameStarted = true;
@@ -184,15 +228,16 @@
             bonusTarget.style.position = 'absolute';
             bonusTarget.style.width = '50px';
             bonusTarget.style.height = '50px';
+            bonusTarget.style.zIndex = '1';
             bonusTarget.style.left = `${x}px`;
             bonusTarget.style.top = `${y}px`;
             document.body.appendChild(bonusTarget);
 
             bonusTarget.onclick = () => {
                 score += 100;
-                remainingAmmo += 6;
-                updateAmmoDisplay();
+                remainingAmmo += 6; // Reload 6 ammo
                 updateScoreDisplay();
+                updateAmmoDisplay();
                 document.body.removeChild(bonusTarget);
             };
 
@@ -208,79 +253,44 @@
             clearInterval(targetInterval);
             gameStarted = false;
             restartButton.style.display = 'block';
-            alert(`Game Over! Your Score: ${score}`);
+            alert(`Game Over! Your score: ${score}`);
         }
 
         function restartGame() {
-            score = 0;
-            gameTime = 60;
-            updateScoreDisplay();
-            updateTimerDisplay();
+            restartButton.style.display = 'none';
             startGame();
+        }
+
+        function reloadAmmo() {
+            if (remainingAmmo > 0) {
+                let audio = new Audio('./sounds/reload.wav');
+                audio.play();
+                const ammoToLoad = Math.min(clipSize - currentClip, remainingAmmo);
+                currentClip += ammoToLoad;
+                remainingAmmo -= ammoToLoad;
+                updateAmmoDisplay();
+            }
         }
 
         document.onclick = (event) => {
             if (gameStarted) {
-                if (!reloadButton.contains(event.target) && !fireButton.contains(event.target)) {
-                    if (currentClip > 0) {
-                        currentClip--;
-                        updateAmmoDisplay();
-                        let audio = new Audio('./sounds/shot.mp3');
-                        audio.play();
-                        createFlash(event.pageX, event.pageY);
-                    } else {
-                        let audioEmpty = new Audio('./sounds/emptyshot.wav');
-                        audioEmpty.play();
-                    }
+                if (currentClip > 0) {
+                    currentClip--;
+                    updateAmmoDisplay();
+                    let audio = new Audio('./sounds/shot.mp3');
+                    audio.play();
+                } else {
+                    let audioEmpty = new Audio('./sounds/emptyshot.wav');
+                    audioEmpty.play();
                 }
             }
         };
 
-        function createFlash(x, y) {
-            let img = document.createElement('img');
-            img.src = 'images/flash.png';
-            img.style.position = 'absolute';
-            img.style.left = `${x}px`;
-            img.style.top = `${y}px`;
-            img.style.transform = 'translate(-50%, -50%) scale(0)';
-            img.style.transition = 'transform 0.1s, opacity 0.15s';
-            img.style.zIndex = '2';
-            document.body.appendChild(img);
-            setTimeout(() => {
-                img.style.transform = 'translate(-50%, -50%) scale(1)';
-            }, 0);
-            setTimeout(() => {
-                img.style.opacity = '0';
-                setTimeout(() => {
-                    document.body.removeChild(img);
-                }, 150);
-            }, 150);
-        }
-
         document.addEventListener('keydown', function(event) {
-            if (event.code === 'KeyR' && currentClip < clipSize && remainingAmmo > 0) {
-                let audio3 = new Audio('./sounds/reload.wav');
-                audio3.play();
-                if (remainingAmmo >= clipSize) {
-                    remainingAmmo -= (clipSize - currentClip);
-                    currentClip = clipSize;
-                } else {
-                    currentClip = remainingAmmo;
-                    remainingAmmo = 0;
-                }
-                updateAmmoDisplay();
+            if (event.code === 'KeyR' && gameStarted) {
+                reloadAmmo();
             }
         });
-
-        const reloadButton = document.createElement('button');
-        reloadButton.innerText = 'RELOAD';
-        reloadButton.style.position = 'fixed';
-        reloadButton.style.bottom = '120px';
-        reloadButton.style.left = '50%';
-        reloadButton.style.transform = 'translateX(-50%)';
-        reloadButton.style.zIndex = '3';
-        reloadButton.style.display = 'none';
-        document.body.appendChild(reloadButton);
     </script>
 </body>
 </html>
