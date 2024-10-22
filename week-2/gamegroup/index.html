@@ -24,8 +24,7 @@
 
         /* Prevent image dragging */
         img {
-            pointer-events: none; /* Prevents mouse events on images */
-            user-drag: none; /* Non-standard but helpful for some browsers */
+            pointer-events: auto; /* Allow mouse events on images */
             -webkit-user-drag: none; /* Non-standard for WebKit */
         }
 
@@ -134,8 +133,8 @@
         /* Flash effect styles */
         .flash {
             position: absolute;
-            width: 300px; /* Adjust flash size to be larger */
-            height: 300px; /* Adjust flash size to be larger */
+            width: 900px; /* Adjust flash size to be larger */
+            height: 900px; /* Adjust flash size to be larger */
             z-index: 5;
             opacity: 1;
             transition: transform 0.1s, opacity 0.15s;
