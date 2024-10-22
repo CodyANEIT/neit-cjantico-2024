@@ -27,7 +27,7 @@ input::-webkit-inner-spin-button {
 }
 
 /* Button styles */
-button {
+button, .game-button {
     padding: 10px 20px;
     font-size: 28px;
     background-color: #f59517;
@@ -39,21 +39,33 @@ button {
     transition: background-color 0.3s;
 }
 
-button:hover {
+button:hover, .game-button:hover {
     background-color: #d37814;
 }
 
-button:active {
+button:active, .game-button:active {
     background-color: #b26512;
 }
 
 /* Ammo display styles */
-.ammoDisplay {
-    font-family: 'Western', 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-size: 24px;
-    color: #f59517;
+.display {
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    border-radius: 5px;
     position: fixed;
-    top: 10px;
-    left: 10px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 4;
+}
+
+.ammoDisplay {
+    top: 10px;
+}
+
+.scoreDisplay {
+    top: 50px;
+}
+
+.timerDisplay {
+    top: 90px;
 }
