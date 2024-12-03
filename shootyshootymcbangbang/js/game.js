@@ -1,9 +1,11 @@
 const canvas = document.getElementById("game-canvas");
 const ctx = canvas.getContext("2d");
 
+// Adjust canvas dimensions
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// Load images
 const playerImage = new Image();
 playerImage.src = "images/player.png";
 
@@ -16,6 +18,7 @@ background.src = "images/background.png";
 const sight = new Image();
 sight.src = "images/sight.png";
 
+// Game state variables
 let player = { x: canvas.width / 2, y: canvas.height / 2, size: 40, rotation: 0, health: 3 };
 let badGuys = [];
 let bullets = [];
@@ -32,10 +35,10 @@ const scoreBoard = document.createElement("div");
 scoreBoard.id = "score";
 document.body.appendChild(scoreBoard);
 
+// Event Listeners
 playButton.onclick = startGame;
 retryButton.onclick = restartGame;
 
-mainMenu.style.display = "block";
 canvas.style.cursor = "none";
 
 function startGame() {
@@ -151,10 +154,6 @@ function drawBackground() {
 
     ctx.drawImage(background, 0, backgroundOffset - canvas.height, canvas.width, canvas.height);
     ctx.drawImage(background, 0, backgroundOffset, canvas.width, canvas.height);
-}
-
-function drawCursor(event) {
-    ctx.drawImage(sight, event.clientX - 16, event.clientY - 16, 32, 32);
 }
 
 function gameLoop() {
