@@ -1,11 +1,11 @@
 const canvas = document.getElementById("game-canvas");
 const ctx = canvas.getContext("2d");
 
-// Adjust canvas dimensions
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+// Set canvas dimensions
+canvas.width = 960;
+canvas.height = 540;
 
-// Load images
+// Load assets
 const playerImage = new Image();
 playerImage.src = "images/player.png";
 
@@ -31,11 +31,8 @@ const retryButton = document.getElementById("retry-button");
 const mainMenu = document.getElementById("main-menu");
 const gameOverScreen = document.getElementById("game-over");
 const scoreDisplay = document.getElementById("score-display");
-const scoreBoard = document.createElement("div");
-scoreBoard.id = "score";
-document.body.appendChild(scoreBoard);
+const scoreBoard = document.getElementById("score");
 
-// Event Listeners
 playButton.onclick = startGame;
 retryButton.onclick = restartGame;
 
@@ -64,7 +61,8 @@ function resetGame() {
 }
 
 window.addEventListener("mousemove", (event) => {
-    const angle = Math.atan2(event.clientY - player.y, event.clientX - player.x);
+    const rect = canvas.getBoundingClientRect();
+    const angle = Math.atan2(event.clientY - rect.top - player.y, event.clientX - rect.left - player.x);
     player.rotation = angle;
 });
 
@@ -79,16 +77,16 @@ function shootBullet() {
 window.addEventListener("keydown", (event) => {
     switch (event.key) {
         case "w":
-            player.y -= 10;
+            player.y = Math.max(player.y - 10, 20);
             break;
         case "s":
-            player.y += 10;
+            player.y = Math.min(player.y + 10, canvas.height - 20);
             break;
         case "a":
-            player.x -= 10;
+            player.x = Math.max(player.x - 10, 20);
             break;
         case "d":
-            player.x += 10;
+            player.x = Math.min(player.x + 10, canvas.width - 20);
             break;
     }
 });

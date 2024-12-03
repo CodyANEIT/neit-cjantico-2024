@@ -4,7 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shooty-Shooty McBang-Bang</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: #000;
+        }
+
+        #main-menu, #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: none;
+        }
+
+        #main-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #logo {
+            width: 200px;
+            margin-bottom: 20px;
+        }
+
+        #play-button, #retry-button {
+            width: 120px;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #play-button:hover, #retry-button:hover {
+            transform: scale(1.1);
+        }
+
+        #retry-button {
+            margin-top: 20px;
+        }
+
+        #game-canvas {
+            display: block;
+            margin: 0 auto;
+            background: #000;
+            width: 960px;
+            height: 540px;
+            border: 2px solid #fff;
+        }
+
+        #game-over h1 {
+            color: white;
+            font-size: 36px;
+            margin: 0;
+        }
+
+        #game-over p {
+            color: white;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <!-- Main Menu -->
@@ -22,6 +94,8 @@
         <p id="score-display">Score: 0</p>
         <img src="images/retry.png" alt="Retry Button" id="retry-button">
     </div>
+
+    <div id="score">Score: 0</div>
 
     <script src="game.js"></script>
 </body>
