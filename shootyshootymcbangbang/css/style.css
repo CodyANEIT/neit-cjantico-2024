@@ -1,0 +1,40 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+#main-menu, #game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: none;
+}
+
+#main-menu img, #game-over img {
+    cursor: pointer;
+}
+
+#game-canvas {
+    display: block;
+    background: #000;
+}
+
+#main-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#game-over h1 {
+    color: white;
+    margin: 0 0 10px;
+}
+
+#game-over p {
+    color: white;
+    font-size: 18px;
+    margin: 10px 0;
+}
