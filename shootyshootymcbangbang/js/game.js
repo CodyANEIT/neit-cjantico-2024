@@ -16,24 +16,33 @@ background.src = "images/background.png";
 const sight = new Image();
 sight.src = "images/sight.png";
 
-let player = { x: canvas.width / 2, y: canvas.height / 2, size: 50, rotation: 0, health: 3 };
+let player = { x: canvas.width / 2, y: canvas.height / 2, size: 40, rotation: 0, health: 3 };
 let badGuys = [];
 let bullets = [];
 let score = 0;
 let gameRunning = false;
 let backgroundOffset = 0;
 
-document.getElementById("play-button").onclick = startGame;
-document.getElementById("retry-button").onclick = restartGame;
+const playButton = document.getElementById("play-button");
+const retryButton = document.getElementById("retry-button");
+const mainMenu = document.getElementById("main-menu");
+const gameOverScreen = document.getElementById("game-over");
+const scoreDisplay = document.getElementById("score-display");
+const scoreBoard = document.createElement("div");
+scoreBoard.id = "score";
+document.body.appendChild(scoreBoard);
 
-document.getElementById("main-menu").style.display = "block";
+playButton.onclick = startGame;
+retryButton.onclick = restartGame;
 
+mainMenu.style.display = "block";
 canvas.style.cursor = "none";
 
 function startGame() {
     gameRunning = true;
-    document.getElementById("main-menu").style.display = "none";
-    document.getElementById("game-over").style.display = "none";
+    mainMenu.style.display = "none";
+    gameOverScreen.style.display = "none";
+    scoreBoard.style.display = "block";
     resetGame();
     requestAnimationFrame(gameLoop);
 }
@@ -48,6 +57,7 @@ function resetGame() {
     bullets = [];
     score = 0;
     backgroundOffset = 0;
+    scoreBoard.textContent = `Score: ${score}`;
 }
 
 window.addEventListener("mousemove", (event) => {
@@ -104,9 +114,9 @@ function drawBadGuys() {
         badGuy.x += Math.cos(badGuy.angle) * 2;
         badGuy.y += Math.sin(badGuy.angle) * 2;
 
-        ctx.drawImage(badGuyImage, badGuy.x - 25, badGuy.y - 25, 50, 50);
+        ctx.drawImage(badGuyImage, badGuy.x - 20, badGuy.y - 20, 40, 40);
 
-        if (Math.hypot(player.x - badGuy.x, player.y - badGuy.y) < 25) {
+        if (Math.hypot(player.x - badGuy.x, player.y - badGuy.y) < 20) {
             player.health--;
             badGuys.splice(badGuys.indexOf(badGuy), 1);
             if (player.health <= 0) endGame();
@@ -116,8 +126,8 @@ function drawBadGuys() {
 
 function drawBullets() {
     for (let bullet of bullets) {
-        bullet.x += Math.cos(bullet.angle) * 5;
-        bullet.y += Math.sin(bullet.angle) * 5;
+        bullet.x += Math.cos(bullet.angle) * 10;
+        bullet.y += Math.sin(bullet.angle) * 10;
 
         ctx.beginPath();
         ctx.arc(bullet.x, bullet.y, 5, 0, Math.PI * 2);
@@ -125,8 +135,9 @@ function drawBullets() {
         ctx.fill();
 
         for (let badGuy of badGuys) {
-            if (Math.hypot(bullet.x - badGuy.x, bullet.y - badGuy.y) < 25) {
+            if (Math.hypot(bullet.x - badGuy.x, bullet.y - badGuy.y) < 20) {
                 score += 10;
+                scoreBoard.textContent = `Score: ${score}`;
                 badGuys.splice(badGuys.indexOf(badGuy), 1);
                 bullets.splice(bullets.indexOf(bullet), 1);
             }
@@ -142,7 +153,7 @@ function drawBackground() {
     ctx.drawImage(background, 0, backgroundOffset, canvas.width, canvas.height);
 }
 
-function drawCursor() {
+function drawCursor(event) {
     ctx.drawImage(sight, event.clientX - 16, event.clientY - 16, 32, 32);
 }
 
@@ -155,13 +166,13 @@ function gameLoop() {
     drawPlayer();
     drawBadGuys();
     drawBullets();
-    drawCursor();
 
     requestAnimationFrame(gameLoop);
 }
 
 function endGame() {
     gameRunning = false;
-    document.getElementById("game-over").style.display = "block";
-    document.getElementById("score-display").innerText = `Score: ${score}`;
+    gameOverScreen.style.display = "block";
+    scoreBoard.style.display = "none";
+    scoreDisplay.innerText = `Score: ${score}`;
 }
