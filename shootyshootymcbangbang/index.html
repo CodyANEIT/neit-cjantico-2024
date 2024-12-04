@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shooty-Shooty McBang-Bang</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
-
         body {
             margin: 0;
             display: flex;
@@ -14,11 +12,11 @@
             align-items: center;
             height: 100vh;
             background: #000;
+            font-family: 'Arial', sans-serif;
             overflow: hidden;
-            font-family: 'Bangers', cursive;
         }
 
-        #main-container {
+        #game-container {
             position: relative;
             width: 960px;
             height: 540px;
@@ -32,46 +30,32 @@
             cursor: none;
         }
 
-        #main-menu, #game-over {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            display: none;
-        }
-
-        #main-menu {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #logo {
-            width: 200px;
-            margin-bottom: 20px;
-        }
-
-        #play-button, #retry-button {
-            width: 120px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        #play-button:hover, #retry-button:hover {
-            transform: scale(1.1);
-        }
-
-        #retry-button {
-            margin-top: 20px;
+        #score, #wave-indicator {
+            font-size: 24px;
+            color: #fff;
+            text-shadow: 2px 2px 4px #000;
         }
 
         #score {
             position: absolute;
             bottom: 10px;
-            right: 10px;
+            left: 10px;
+        }
+
+        #wave-indicator {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        .game-text {
             font-size: 24px;
-            color: white;
+            color: #fff;
+            text-shadow: 2px 2px 4px #000;
         }
 
         .custom-cursor {
@@ -82,25 +66,81 @@
             background-image: url('images/sight.png');
             background-size: cover;
         }
+
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: none;
+        }
+
+        #game-over h1, #game-over p {
+            color: white;
+            font-size: 30px;
+        }
+
+        #retry-button {
+            display: block;
+            margin-top: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        #start-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+        }
+
+        #start-screen img {
+            width: 400px;
+            margin-bottom: 30px;
+        }
+
+        #play-button img {
+            width: 150px; /* Slightly smaller play button */
+        }
+
+        #start-screen button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
     </style>
 </head>
 <body>
-    <div id="main-container">
-        <div id="main-menu">
-            <img src="images/logo.png" alt="Game Logo" id="logo">
-            <img src="images/play.png" alt="Play Button" id="play-button">
-        </div>
 
+    <div id="start-screen">
+        <img src="images/logo.png" alt="Game Logo">
+        <button id="play-button">
+            <img src="images/play.png" alt="Play Game">
+        </button>
+    </div>
+
+    <div id="game-container" style="display: none;">
         <canvas id="game-canvas"></canvas>
-
+        <div id="score" class="game-text">Score: 0</div>
+        <div id="wave-indicator" class="game-text">New Wave!</div>
         <div id="game-over">
             <h1>Game Over</h1>
-            <p id="final-score">Final Score: 0</p>
-            <p id="final-wave">Final Wave: 0</p>
-            <img src="images/retry.png" alt="Retry Button" id="retry-button">
+            <p id="final-score" class="game-text">Final Score: 0</p>
+            <p id="final-wave" class="game-text">Final Wave: 0</p>
+            <button id="retry-button">
+                <img src="images/retry.png" alt="Retry">
+            </button>
         </div>
-
-        <div id="score">Score: 0</div>
     </div>
 
     <div id="custom-cursor" class="custom-cursor"></div>
@@ -109,23 +149,31 @@
         const canvas = document.getElementById("game-canvas");
         const ctx = canvas.getContext("2d");
 
-        canvas.width = 960;
-        canvas.height = 540;
+        const backgroundImage = new Image();
+        backgroundImage.src = 'images/background.png'; // Background image
 
         const playerImage = new Image();
-        playerImage.src = "images/player.png";
+        playerImage.src = 'images/player.png'; // Player image
 
         const badGuyImage = new Image();
-        badGuyImage.src = "images/badguy.png";
+        badGuyImage.src = 'images/badguy.png'; // Bad guy image
 
-        const backgroundImage = new Image();
-        backgroundImage.src = "images/background.png";
+        const healImage = new Image();
+        healImage.src = 'images/green-cross.png'; // Healer image
 
         const cursor = document.getElementById("custom-cursor");
+        const waveIndicator = document.getElementById("wave-indicator");
 
-        let player = { x: canvas.width / 2, y: canvas.height / 2, size: 40, rotation: 0, health: 3 };
+        const startScreen = document.getElementById("start-screen");
+        const gameContainer = document.getElementById("game-container");
+        const playButton = document.getElementById("play-button");
+        const retryButton = document.getElementById("retry-button");
+
+        // Game variables
+        let player = { x: canvas.width / 2, y: canvas.height / 2, size: 50, rotation: 0, health: 3 };
         let bullets = [];
         let badGuys = [];
+        let healers = [];
         let badGuyBullets = [];
         let keys = {};
         let score = 0;
@@ -133,18 +181,12 @@
         let gameRunning = false;
         let backgroundY = 0;
 
-        const playButton = document.getElementById("play-button");
-        const retryButton = document.getElementById("retry-button");
-        const mainMenu = document.getElementById("main-menu");
-        const gameOverScreen = document.getElementById("game-over");
-        const finalScore = document.getElementById("final-score");
-        const finalWave = document.getElementById("final-wave");
-        const scoreDisplay = document.getElementById("score");
+        // Setup canvas size
+        canvas.width = 960;
+        canvas.height = 540;
 
-        playButton.addEventListener("click", startGame);
-        retryButton.addEventListener("click", restartGame);
-
-        document.addEventListener("mousemove", (e) => {
+        // Control events
+        document.addEventListener('mousemove', (e) => {
             cursor.style.left = `${e.pageX}px`;
             cursor.style.top = `${e.pageY}px`;
 
@@ -158,33 +200,50 @@
             if (gameRunning) bullets.push({ x: player.x, y: player.y, rotation: player.rotation });
         });
 
-        function startGame() {
-            gameRunning = true;
-            mainMenu.style.display = "none";
-            gameOverScreen.style.display = "none";
-            scoreDisplay.style.display = "block";
-            resetGame();
-            requestAnimationFrame(gameLoop);
-        }
-
-        function restartGame() {
-            startGame();
-        }
-
-        function resetGame() {
-            player.health = 3;
-            bullets = [];
-            badGuys = [];
-            badGuyBullets = [];
-            score = 0;
-            wave = 1;
-            backgroundY = 0;
-            scoreDisplay.textContent = `Score: ${score}`;
-        }
-
         window.addEventListener("keydown", (e) => keys[e.key] = true);
         window.addEventListener("keyup", (e) => keys[e.key] = false);
 
+        // Start game
+        function startGame() {
+            startScreen.style.display = "none";
+            gameContainer.style.display = "block";
+            gameRunning = true;
+            score = 0;
+            wave = 1;
+            backgroundY = 0;
+            player.health = 3;
+            bullets = [];
+            badGuys = [];
+            healers = [];
+            badGuyBullets = [];
+            document.getElementById("game-over").style.display = "none";
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Retry game
+        function retryGame() {
+            document.getElementById("game-over").style.display = "none";
+            startGame();
+        }
+
+        // Game over
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById("final-score").textContent = `Final Score: ${score}`;
+            document.getElementById("final-wave").textContent = `Final Wave: ${wave - 1}`;
+            document.getElementById("game-over").style.display = "block";
+        }
+
+        // Update background
+        function drawBackground() {
+            backgroundY += 2; // Speed of scrolling
+            if (backgroundY >= canvas.height) backgroundY = 0; // Loop background
+
+            ctx.drawImage(backgroundImage, 0, backgroundY, canvas.width, canvas.height);
+            ctx.drawImage(backgroundImage, 0, backgroundY - canvas.height, canvas.width, canvas.height); // Seamless loop
+        }
+
+        // Draw player
         function drawPlayer() {
             ctx.save();
             ctx.translate(player.x, player.y);
@@ -193,62 +252,95 @@
             ctx.restore();
         }
 
+        // Move player
         function movePlayer() {
             if (keys["w"]) player.y -= 5;
             if (keys["s"]) player.y += 5;
             if (keys["a"]) player.x -= 5;
             if (keys["d"]) player.x += 5;
 
+            // Boundary checks
             player.x = Math.max(0, Math.min(canvas.width, player.x));
             player.y = Math.max(0, Math.min(canvas.height, player.y));
         }
 
-        function spawnBadGuys() {
-            const badGuysPerWave = 3 + wave;
-            for (let i = 0; i < badGuysPerWave; i++) {
-                const x = Math.random() < 0.5 ? -50 : canvas.width + 50;
-                const y = Math.random() * canvas.height;
-                badGuys.push({ x, y, size: 40, rotation: 0 });
-            }
-            wave++;
-        }
-
-        function updateBadGuys() {
-            badGuys.forEach((enemy) => {
-                const dx = player.x - enemy.x;
-                const dy = player.y - enemy.y;
-                const angle = Math.atan2(dy, dx);
-                enemy.x += Math.cos(angle) * 1.5;
-                enemy.y += Math.sin(angle) * 1.5;
-                
-                // Randomly make enemies shoot
-                if (Math.random() < 0.01) spawnBadGuyBullets(enemy);
-            });
-        }
-
-        function drawBadGuys() {
-            badGuys.forEach(enemy => {
-                ctx.save();
-                ctx.translate(enemy.x, enemy.y);
-                ctx.rotate(enemy.rotation);
-                ctx.drawImage(badGuyImage, -enemy.size / 2, -enemy.size / 2, enemy.size, enemy.size);
-                ctx.restore();
-            });
-        }
-
-        function spawnBadGuyBullets(enemy) {
-            const angle = Math.atan2(player.y - enemy.y, player.x - enemy.x);
-            badGuyBullets.push({
-                x: enemy.x,
-                y: enemy.y,
-                rotation: angle,
-            });
-        }
-
-        function moveBadGuyBullets() {
-            badGuyBullets.forEach((bullet, index) => {
+        // Update bullets
+        function moveBullets() {
+            bullets.forEach((bullet, index) => {
                 bullet.x += Math.cos(bullet.rotation) * 5;
                 bullet.y += Math.sin(bullet.rotation) * 5;
+
+                if (bullet.x < 0 || bullet.x > canvas.width || bullet.y < 0 || bullet.y > canvas.height) {
+                    bullets.splice(index, 1);
+                }
+            });
+        }
+
+        // Draw bullets
+        function drawBullets() {
+            bullets.forEach((bullet) => {
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, 5, 0, Math.PI * 2);
+                ctx.fillStyle = "yellow";
+                ctx.fill();
+            });
+        }
+
+        // Spawn bad guys at edges
+        function spawnBadGuys() {
+            const edge = Math.random();
+            let x, y;
+
+            if (edge < 0.25) { // Top
+                x = Math.random() * canvas.width;
+                y = 0;
+            } else if (edge < 0.5) { // Bottom
+                x = Math.random() * canvas.width;
+                y = canvas.height;
+            } else if (edge < 0.75) { // Left
+                x = 0;
+                y = Math.random() * canvas.height;
+            } else { // Right
+                x = canvas.width;
+                y = Math.random() * canvas.height;
+            }
+
+            badGuys.push({
+                x,
+                y,
+                size: 50,
+                health: 1,
+                speed: 1,
+                rotation: 0,
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotation);
+                    ctx.drawImage(badGuyImage, -this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                },
+                update() {
+                    // Follow player
+                    const dx = player.x - this.x;
+                    const dy = player.y - this.y;
+                    this.rotation = Math.atan2(dy, dx);
+
+                    this.x += Math.cos(this.rotation) * this.speed;
+                    this.y += Math.sin(this.rotation) * this.speed;
+
+                    // Shoot at player
+                    if (Math.random() < 0.02) { // Shooting rate
+                        badGuyBullets.push({ x: this.x, y: this.y, rotation: this.rotation });
+                    }
+                }
+            });
+        }
+
+        // Move bad guy bullets
+        function moveBadGuyBullets() {
+            badGuyBullets.forEach((bullet, index) => {
+                bullet.x += Math.cos(bullet.rotation) * 4;
+                bullet.y += Math.sin(bullet.rotation) * 4;
 
                 if (bullet.x < 0 || bullet.x > canvas.width || bullet.y < 0 || bullet.y > canvas.height) {
                     badGuyBullets.splice(index, 1);
@@ -256,107 +348,84 @@
             });
         }
 
+        // Draw bad guy bullets
         function drawBadGuyBullets() {
             badGuyBullets.forEach((bullet) => {
-                ctx.save();
-                ctx.translate(bullet.x, bullet.y);
-                ctx.rotate(bullet.rotation);
                 ctx.beginPath();
-                ctx.arc(0, 0, 5, 0, Math.PI * 2); // Draw enemy bullet as a circle
-                ctx.fillStyle = 'red';
+                ctx.arc(bullet.x, bullet.y, 5, 0, Math.PI * 2);
+                ctx.fillStyle = "red";
                 ctx.fill();
-                ctx.restore();
             });
         }
 
-        function moveBullets() {
-            bullets.forEach((bullet, index) => {
-                bullet.x += Math.cos(bullet.rotation) * 10;
-                bullet.y += Math.sin(bullet.rotation) * 10;
-
-                // Check if bullet is out of bounds
-                if (bullet.x < 0 || bullet.x > canvas.width || bullet.y < 0 || bullet.y > canvas.height) {
-                    bullets.splice(index, 1);
-                }
-            });
-        }
-
-        function drawBullets() {
-            bullets.forEach((bullet) => {
-                ctx.save();
-                ctx.translate(bullet.x, bullet.y);
-                ctx.rotate(bullet.rotation);
-                ctx.beginPath();
-                ctx.arc(0, 0, 5, 0, Math.PI * 2); // Draw player bullet as a circle
-                ctx.fillStyle = 'white';
-                ctx.fill();
-                ctx.restore();
-            });
-        }
-
+        // Handle bullet and bad guy collisions
         function checkCollisions() {
-            // Check player bullet collisions with bad guys
+            // Player's bullet hits bad guy
             bullets.forEach((bullet, bIndex) => {
                 badGuys.forEach((badGuy, gIndex) => {
                     const dx = bullet.x - badGuy.x;
                     const dy = bullet.y - badGuy.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
-
                     if (distance < badGuy.size / 2 + 5) {
-                        // Collision detected
-                        badGuys.splice(gIndex, 1);
-                        bullets.splice(bIndex, 1);
-                        score += 10; // Increment score
+                        badGuys.splice(gIndex, 1); // Remove bad guy
+                        bullets.splice(bIndex, 1); // Remove bullet
+                        score += 10; // Increase score
                     }
                 });
             });
 
-            // Check bad guy bullets collisions with player
+            // Bad guy's bullet hits player
             badGuyBullets.forEach((bullet, bIndex) => {
                 const dx = bullet.x - player.x;
                 const dy = bullet.y - player.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-
                 if (distance < player.size / 2 + 5) {
+                    badGuyBullets.splice(bIndex, 1); // Remove bullet
                     player.health -= 1; // Reduce health
-                    badGuyBullets.splice(bIndex, 1);
+                    if (player.health <= 0) gameOver(); // Check game over
                 }
             });
         }
 
+        // Wave progress and spawn bad guys
         function gameLoop() {
             if (!gameRunning) return;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+            drawBackground();
             movePlayer();
             moveBullets();
             moveBadGuyBullets();
-
             checkCollisions();
-            updateBadGuys();
-
             drawPlayer();
             drawBullets();
-            drawBadGuys();
             drawBadGuyBullets();
 
-            if (badGuys.length === 0) spawnBadGuys();
+            // Spawn bad guys if none are left
+            if (badGuys.length === 0) {
+                spawnBadGuys();
+                waveIndicator.style.opacity = 1;
+                setTimeout(() => waveIndicator.style.opacity = 0, 1000); // Fade wave indicator
+                wave++;
+            }
 
-            scoreDisplay.textContent = `Score: ${score}`;
+            // Update and draw bad guys
+            badGuys.forEach((badGuy) => {
+                badGuy.update();
+                badGuy.draw();
+            });
 
-            // End game if player runs out of health
-            if (player.health <= 0) endGame();
+            // Update score display
+            document.getElementById("score").textContent = `Score: ${score}`;
 
             requestAnimationFrame(gameLoop);
         }
 
-        function endGame() {
-            gameRunning = false;
-            finalScore.textContent = `Final Score: ${score}`;
-            finalWave.textContent = `Final Wave: ${wave - 1}`;
-            gameOverScreen.style.display = "block";
-        }
+        // Start button event
+        playButton.addEventListener("click", startGame);
+
+        // Retry button event
+        retryButton.addEventListener("click", retryGame);
     </script>
 </body>
 </html>
