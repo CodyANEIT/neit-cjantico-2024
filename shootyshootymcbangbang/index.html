@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shooty-Shooty McBang-Bang</title>
     <style>
+        /* Western-style font (using a Google font) and off-white color */
         body {
             margin: 0;
             display: flex;
@@ -12,8 +13,10 @@
             align-items: center;
             height: 100vh;
             background: #000;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Cinzel', serif; /* Western-style font */
             overflow: hidden;
+            color: #f4f4f4; /* Slight off-white */
+            user-select: none; /* Prevent text selection */
         }
 
         #game-container {
@@ -30,31 +33,9 @@
             cursor: none;
         }
 
-        #score, #wave-indicator {
-            font-size: 24px;
-            color: #fff;
-            text-shadow: 2px 2px 4px #000;
-        }
-
-        #score {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-        }
-
-        #wave-indicator {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-            font-size: 30px;
-            font-weight: bold;
-        }
-
         .game-text {
             font-size: 24px;
-            color: #fff;
+            color: #f4f4f4; /* Slight off-white */
             text-shadow: 2px 2px 4px #000;
         }
 
@@ -67,6 +48,7 @@
             background-size: cover;
         }
 
+        /* Centering game over content */
         #game-over {
             position: absolute;
             top: 50%;
@@ -77,8 +59,9 @@
         }
 
         #game-over h1, #game-over p {
-            color: white;
+            color: #f4f4f4; /* Slight off-white */
             font-size: 30px;
+            margin: 10px 0;
         }
 
         #retry-button {
@@ -88,6 +71,35 @@
             border: none;
             cursor: pointer;
             padding: 0;
+        }
+
+        /* Instructions placed below the canvas */
+        #instructions {
+            position: absolute;
+            top: 50%; /* Start at the center */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #f4f4f4;
+            text-shadow: 2px 2px 4px #000;
+            text-align: center;
+            display: none; /* Initially hidden */
+            white-space: nowrap;
+            max-width: 960px;
+        }
+
+        /* New wave text */
+        #new-wave {
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 36px; /* Slightly smaller */
+            color: #f4f4f4;
+            font-weight: bold;
+            opacity: 0;
+            display: none;
+            text-align: center;
         }
 
         #start-screen {
@@ -106,6 +118,16 @@
         #start-screen img {
             width: 400px;
             margin-bottom: 30px;
+            animation: shakeRotation 1s ease-in-out infinite; /* Rotate shake animation */
+        }
+
+        /* Rotation animation for logo */
+        @keyframes shakeRotation {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+            100% { transform: rotate(0deg); }
         }
 
         #play-button img {
@@ -118,7 +140,16 @@
             cursor: pointer;
             padding: 0;
         }
+
+        /* New style for retry button image size */
+        #retry-button img {
+            width: 200px; /* Adjusted size to 200px */
+            display: block; /* Ensures proper rendering */
+        }
     </style>
+
+    <!-- Google Font for Western Style -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -131,8 +162,6 @@
 
     <div id="game-container" style="display: none;">
         <canvas id="game-canvas"></canvas>
-        <div id="score" class="game-text">Score: 0</div>
-        <div id="wave-indicator" class="game-text">New Wave!</div>
         <div id="game-over">
             <h1>Game Over</h1>
             <p id="final-score" class="game-text">Final Score: 0</p>
@@ -144,6 +173,18 @@
     </div>
 
     <div id="custom-cursor" class="custom-cursor"></div>
+
+    <div id="instructions">
+        <p>WASD To move</p>
+        <p>Left click to fire!</p>
+        <p>Go to the green crosses to regenerate health.</p>
+        <p>Make sure to rack up one heck of a score!</p>
+    </div>
+
+    <div id="new-wave" class="game-text">New Wave!</div>
+
+    <!-- Add the shot sound effect -->
+    <audio id="shot-sound" src="sounds/shot.mp3" preload="auto"></audio>
 
     <script>
         const canvas = document.getElementById("game-canvas");
@@ -162,15 +203,18 @@
         healImage.src = 'images/green-cross.png'; // Healer image
 
         const cursor = document.getElementById("custom-cursor");
-        const waveIndicator = document.getElementById("wave-indicator");
 
         const startScreen = document.getElementById("start-screen");
         const gameContainer = document.getElementById("game-container");
         const playButton = document.getElementById("play-button");
         const retryButton = document.getElementById("retry-button");
+        const newWaveText = document.getElementById("new-wave");
+        const instructionsText = document.getElementById("instructions");
+
+        const shotSound = document.getElementById("shot-sound");
 
         // Game variables
-        let player = { x: canvas.width / 2, y: canvas.height / 2, size: 50, rotation: 0, health: 3 };
+        let player = { x: canvas.width / 2, y: canvas.height / 2, size: 50, rotation: 0, health: 3, maxHealth: 3 };
         let bullets = [];
         let badGuys = [];
         let healers = [];
@@ -185,6 +229,10 @@
         canvas.width = 960;
         canvas.height = 540;
 
+        // Prevent right-click and text selection
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        document.addEventListener('selectstart', (e) => e.preventDefault());
+
         // Control events
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = `${e.pageX}px`;
@@ -197,7 +245,10 @@
         });
 
         document.addEventListener("mousedown", () => {
-            if (gameRunning) bullets.push({ x: player.x, y: player.y, rotation: player.rotation });
+            if (gameRunning) {
+                bullets.push({ x: player.x, y: player.y, rotation: player.rotation });
+                shotSound.play(); // Play shot sound
+            }
         });
 
         window.addEventListener("keydown", (e) => keys[e.key] = true);
@@ -211,12 +262,27 @@
             score = 0;
             wave = 1;
             backgroundY = 0;
-            player.health = 3;
+            player.health = player.maxHealth; // Reset player health to full
+            player.x = canvas.width / 2; // Reset player to the center
+            player.y = canvas.height / 2; // Reset player to the center
             bullets = [];
             badGuys = [];
             healers = [];
             badGuyBullets = [];
             document.getElementById("game-over").style.display = "none";
+
+            // Show instructions for 1.5 seconds
+            instructionsText.style.display = "block";
+            setTimeout(() => {
+                instructionsText.style.transition = "opacity 2s";
+                instructionsText.style.opacity = 0;
+            }, 1500); // Fade out after 1.5 seconds
+
+            setTimeout(() => {
+                instructionsText.style.display = "none"; // Hide after fade out
+                instructionsText.style.transition = ""; // Reset transition
+            }, 3000); // Hide after 3 seconds
+
             requestAnimationFrame(gameLoop);
         }
 
@@ -232,6 +298,25 @@
             document.getElementById("final-score").textContent = `Final Score: ${score}`;
             document.getElementById("final-wave").textContent = `Final Wave: ${wave - 1}`;
             document.getElementById("game-over").style.display = "block";
+        }
+
+        // Show new wave
+        function showNewWave() {
+            newWaveText.style.display = "block";
+            newWaveText.style.opacity = 1;
+            newWaveText.style.transform = "translateX(-50%) rotate(0deg)"; // Reset position
+
+            // Spin animation and fade out
+            setTimeout(() => {
+                newWaveText.style.transition = "transform 1s ease, opacity 1s ease";
+                newWaveText.style.transform = "translateX(-50%) rotate(360deg)"; // Spin effect
+                newWaveText.style.opacity = 0;
+            }, 100);
+
+            setTimeout(() => {
+                newWaveText.style.display = "none"; // Hide after animation
+                newWaveText.style.transition = ""; // Reset transition
+            }, 2000); // Wait for the animation to finish before hiding
         }
 
         // Update background
@@ -252,12 +337,19 @@
             ctx.restore();
         }
 
-        // Move player
+        // Smooth movement using requestAnimationFrame
         function movePlayer() {
-            if (keys["w"]) player.y -= 5;
-            if (keys["s"]) player.y += 5;
-            if (keys["a"]) player.x -= 5;
-            if (keys["d"]) player.x += 5;
+            const speed = 5;
+            const velocity = { x: 0, y: 0 };
+
+            if (keys["w"]) velocity.y -= speed;
+            if (keys["s"]) velocity.y += speed;
+            if (keys["a"]) velocity.x -= speed;
+            if (keys["d"]) velocity.x += speed;
+
+            // Smoothen movement
+            player.x += velocity.x;
+            player.y += velocity.y;
 
             // Boundary checks
             player.x = Math.max(0, Math.min(canvas.width, player.x));
@@ -286,7 +378,7 @@
             });
         }
 
-        // Spawn bad guys at edges
+        // Spawn bad guys at edges with increased spawn rate
         function spawnBadGuys() {
             const edge = Math.random();
             let x, y;
@@ -329,7 +421,7 @@
                     this.y += Math.sin(this.rotation) * this.speed;
 
                     // Shoot at player
-                    if (Math.random() < 0.02) { // Shooting rate
+                    if (Math.random() < 0.1) { // Increased spawn rate
                         badGuyBullets.push({ x: this.x, y: this.y, rotation: this.rotation });
                     }
                 }
@@ -385,6 +477,39 @@
                     if (player.health <= 0) gameOver(); // Check game over
                 }
             });
+
+            // Check if the player hits a green health pick-up
+            healers.forEach((healer, hIndex) => {
+                const dx = healer.x - player.x;
+                const dy = healer.y - player.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < healer.size / 2 + 5) {
+                    if (player.health < player.maxHealth) {
+                        player.health += 1; // Restore one life
+                        healers.splice(hIndex, 1); // Remove healer after being picked up
+                    }
+                }
+            });
+        }
+
+        // Spawn healers randomly (with slower spawn rate)
+        function spawnHealers() {
+            if (Math.random() < 0.005) { // Slower spawn rate
+                if (healers.length === 0) { // Ensure only one healer is present at a time
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height;
+
+                    healers.push({
+                        x,
+                        y,
+                        size: 30,
+                        draw() {
+                            ctx.drawImage(healImage, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+                        }
+                    });
+                }
+            }
         }
 
         // Wave progress and spawn bad guys
@@ -404,8 +529,7 @@
             // Spawn bad guys if none are left
             if (badGuys.length === 0) {
                 spawnBadGuys();
-                waveIndicator.style.opacity = 1;
-                setTimeout(() => waveIndicator.style.opacity = 0, 1000); // Fade wave indicator
+                showNewWave(); // Show "New Wave!" text
                 wave++;
             }
 
@@ -415,8 +539,15 @@
                 badGuy.draw();
             });
 
-            // Update score display
-            document.getElementById("score").textContent = `Score: ${score}`;
+            // Update healers
+            spawnHealers();
+            healers.forEach((healer) => healer.draw());
+
+            // Update score and lives inside the canvas
+            ctx.font = '24px Cinzel';
+            ctx.fillStyle = '#f4f4f4';
+            ctx.fillText(`Score: ${score}`, 10, canvas.height - 30);
+            ctx.fillText(`Lives: ${player.health}`, 10, canvas.height - 10);
 
             requestAnimationFrame(gameLoop);
         }
